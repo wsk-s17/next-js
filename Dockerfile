@@ -25,5 +25,4 @@ COPY --from=builder /app/public ./public
 
 COPY --from=builder /app/next.config.mjs ./
 
-EXPOSE 3000
-CMD ["npm", "start"]
+CMD ["sh", "-c", "PORT=80 npm start"]
