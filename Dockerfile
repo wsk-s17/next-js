@@ -1,28 +1,28 @@
-FROM node:lts-alpine AS deps
-WORKDIR /app
+FROM node:24-alpine AS base
+ENV NEXT_TELEMETRY_DISABLED=1
 
-COPY package*.json ./
+FROM base AS deps
+WORKDIR /app
+RUN apk add --no-cache libc6-compat
+COPY package.json package-lock.json ./
 RUN npm ci
 
-FROM node:lts-alpine AS builder
+FROM base AS builder
 WORKDIR /app
-
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
 RUN npm run build
 
-FROM node:lts-alpine AS runner
+FROM base AS runner
 WORKDIR /app
+ENV NODE_ENV=production \
+    PORT=80 \
+    HOSTNAME=0.0.0.0
 
-ENV NODE_ENV=production
+COPY --from=builder --chown=node:node /app/public ./public
+COPY --from=builder --chown=node:node /app/.next/standalone ./
+COPY --from=builder --chown=node:node /app/.next/static ./.next/static
 
-COPY package*.json ./
-RUN npm ci --omit=dev
-
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-
-COPY --from=builder /app/next.config.mjs ./
-
-CMD ["sh", "-c", "PORT=80 npm start"]
+USER node
+EXPOSE 80
+CMD ["node", "server.js"]
