@@ -1,8 +1,2 @@
 node_modules
 .next
-.git
-.gitea
-Dockerfile
-.dockerignore
-npm-debug.log*
-.env*.local
