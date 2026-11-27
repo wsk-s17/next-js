@@ -2,7 +2,7 @@
 const nextConfig = {
 	/* config options here */
 	output: 'standalone',
-	serverExternalPackages: ['@prisma/adapter-mariadb', 'mariadb'],
+	serverExternalPackages: ['@prisma/adapter-mariadb', 'mariadb', 'sequelize', 'mysql2'],
 	cacheComponents: true,
 	partialPrefetching: true,
 	reactCompiler: true,
